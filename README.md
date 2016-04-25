@@ -1,2 +1,2 @@
 # bus-mall
-collect votes for images from different users. Graph with comulative data is created
+Collect votes for images from different users. Present summary of votes as a graph.
