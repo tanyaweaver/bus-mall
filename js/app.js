@@ -1,6 +1,15 @@
 var allItemsArray = [];
 var namesArray = [];
-var pollResults = [];
+var votes = [];
+var shown = [];
+var popularity = [];
+var clickCount = 0;
+var counts = 4;
+var threeImageContainer = document.getElementById('three-image-container');
+var charts = document.getElementById('charts');
+var data1;
+var data2;
+var data3;
 
 function MallItem (name, path) {
   this.itemName = name;
@@ -9,6 +18,9 @@ function MallItem (name, path) {
   this.timesVoted = 0;
   allItemsArray.push(this);
   namesArray.push(this.itemName);
+  // popularity.push(this.itemPopularity());
+  // votes.push(this.timesVoted);
+  // shown.push(this.timesShown);
 };
 
 MallItem.prototype.itemPopularity = function() {
@@ -40,11 +52,9 @@ function getRandomItem(){
   return Math.floor(Math.random() * allItemsArray.length);
 };
 
-var numbers = [];
-
 function getRandomArray(){ //making sure all three images are different
   var k = 0;
-  numbers = [];
+  var numbers = [];
   while(k < 3){
     c = getRandomItem();
     if(k === 1){
@@ -61,78 +71,158 @@ function getRandomArray(){ //making sure all three images are different
     numbers.push(c);
     k++;
   };
-  return numbers;
+  return numbers; //returns an array with three unique random numbers
 };
 
-var threeImageContainer = document.getElementById('three-image-container');
-
 function displayThreeImages (event){
-  getRandomArray();
-  for (var i = 0; i < numbers.length; i++){
+  var r = getRandomArray(); // 'r' is an array with three unique random numbers
+  for (var i = 0; i < r.length; i++){
     var singleImage = document.createElement('div');
-    singleImage.innerHTML = '<img src="' + allItemsArray[numbers[i]].itemPath + '">';
-    singleImage.classList.add(allItemsArray[numbers[i]].itemName);
-    allItemsArray[numbers[i]].timesShown++;
+    singleImage.innerHTML = '<img src="' + allItemsArray[r[i]].itemPath + '">';
+    singleImage.id = allItemsArray[r[i]].itemName;
+    allItemsArray[r[i]].timesShown++; //tracking what was shown
     threeImageContainer.appendChild(singleImage);
   }
 };
 displayThreeImages();
 
-var clickCount = 0;
+function handleClickMoreVoting() {
+  console.log('clickCount ' + clickCount);
+  charts.textContent = '',
+  results.textContent = '',
+  votes = [];
+  popularity = [];
+  shown = [];
+  counts = counts + 10;
+}
 
 var results = document.getElementById('results');
 var divResults = document.createElement('div');
 var resultsButton = document.createElement('button');
 var continueButton = document.createElement('button');
 
-// function handleClick10() {
-//   clickCount++;
-//   if (clickCount > 35){
-//     divResults.appendChild('resultsButton');
-//     resultsButton.textContent = ('divResults');
-//     results.appendChild(divResults);
-//   }else{
-//     clickResponse(event);
-//   }
-// }
-
-function handleClick25() {
-  clickCount++;
-  if (clickCount > 25){
-    resultsButton.textContent = ('Show Results (item popularity)');
+function handleClickOnImages() {
+  if (clickCount > counts){
+    resultsButton.textContent = ('Show Results');
     continueButton.textContent = ('Continue to vote');
     divResults.appendChild(resultsButton);
     divResults.appendChild(continueButton);
     results.appendChild(divResults);
-    for(var i = 0; i < allItemsArray.length; i++){
-      pollResults.push(allItemsArray[i].itemPopularity());
-    }
   }else{
     clickResponse(event);
   }
 }
 
-function handleResults() {
-  for(var i = 0; i < namesArray.length; i++){
-    var divResultsArray = document.createElement('div');
-    divResultsArray.textContent = (namesArray[i] + ': ' + pollResults[i]);
-    results.appendChild(divResultsArray);
-  }
+function createDataForCharts() {
+  data1 = {
+    labels: namesArray,
+    datasets: [
+      {
+        data: votes,   // The actual data
+        label: 'Number of votes',
+        backgroundColor: 'red',
+        hoverBackgroundColor: 'purple'
+      }]
+  };
+
+  data2 = {
+    labels: namesArray,
+    datasets: [
+      {
+        data: shown,
+        label: 'Times shown',
+        backgroundColor: 'green',
+        hoverBackgroundColor: 'blue'
+      }]
+  };
+
+  data3 = {
+    labels: namesArray,
+    datasets: [
+      {
+        data: popularity,
+        label: 'Popularity (timesVoted/timesShown)',
+        backgroundColor: 'magenta',
+        hoverBackgroundColor: 'green'
+      }]
+  };
 }
 
-function clickResponse (event){
-  var response = event.target.parentNode;
-  var item = response.classList[0];
+function createCanvasElements() {
+  var canvas1 = document.createElement('canvas');
+  canvas1.id = 'votes-chart';
+  canvas1.width = 400;
+  canvas1.height = 300;
+  charts.appendChild(canvas1);
+
+  var canvas2 = document.createElement('canvas');
+  canvas2.id = 'shown-chart';
+  canvas2.width = 400;
+  canvas2.height = 300;
+  charts.appendChild(canvas2);
+
+  var canvas3 = document.createElement('canvas');
+  canvas3.id = 'popularity-chart';
+  canvas3.width = 400;
+  canvas3.height = 300;
+  charts.appendChild(canvas3);
+};
+
+function handleClickOnResults() {  //display results by clicking RESULTS button
+  for(var i = 0; i < allItemsArray.length; i++){
+    popularity.push(allItemsArray[i].itemPopularity());
+    votes.push(allItemsArray[i].timesVoted);
+    shown.push(allItemsArray[i].timesShown);
+  }
+
+  createDataForCharts();
+  createCanvasElements();
+
+  //voted Chart
+  var votesChart = document.getElementById('votes-chart').getContext('2d');
+  var myBarChart1 = new Chart(votesChart, {
+    type: 'bar',
+    data: data1,
+    options: {
+      responsive: false
+    }
+  });
+
+  //shown Chart
+  var shownChart = document.getElementById('shown-chart').getContext('2d');
+  var myBarChart2 = new Chart(shownChart, {
+    type: 'bar',
+    data: data2,
+    options: {
+      responsive: false
+    }
+  });
+
+  //popularity Chart
+  var popularityChart = document.getElementById('popularity-chart').getContext('2d');
+  var myBarChart3 = new Chart(popularityChart, {
+    type: 'bar',
+    data: data3,
+    options: {
+      responsive: false
+    }
+  });
+}
+
+function clickResponse (event){ //tracking what was clicked, displaying 3 new pics after a click
+  clickCount++;
+  console.log('used clicks ' + clickCount);
+  var response = event.target.parentNode.id;
   for (var i = 0; i < allItemsArray.length; i++){
-    if (allItemsArray[i].itemName == item){
+    if (allItemsArray[i].itemName === response){
       allItemsArray[i].timesVoted++;
-      console.log(item + ' voted ' + parseInt(allItemsArray[i].timesVoted));
+      console.log(response + ' voted ' + parseInt(allItemsArray[i].timesVoted));
     }
   }
   threeImageContainer.textContent = '';
   displayThreeImages();
 };
 
-threeImageContainer.addEventListener('click', handleClick25);
-resultsButton.addEventListener('click', handleResults);
-// continueButton.addEventListener('click', handleClick10);
+threeImageContainer.addEventListener('click', handleClickOnImages);
+resultsButton.addEventListener('click', handleClickOnResults);
+continueButton.addEventListener('click', handleClickMoreVoting);
