@@ -24,15 +24,44 @@ function getRandomItem(){
   return Math.floor(Math.random() * allItemsArray.length);
 };
 
+var numbers = [];
+function getRandomArray() {
+  numbers = [];
+  c = getRandomItem();
+  console.log('c is' + c);
+  numbers.push(c);
+  console.log('numbers length ' + numbers.length);
+  c = getRandomItem();
+  console.log('c is' + c);
+  while(c === numbers[0]){
+    console.log('c=numbers[0]');
+    c = getRandomItem();
+    console.log('c is' + c);
+  };
+
+  numbers.push(c);
+  console.log('numbers length ' + numbers.length);
+  c = getRandomItem();
+  console.log('c is' + c);
+  while(c === numbers[0] || c === numbers[1]){
+    console.log('c = numbers[0] and [1]');
+    c = getRandomItem();
+    console.log('c is' + c);
+  }
+  numbers.push(c);
+  console.log('numbers length ' + numbers.length);
+  return numbers;
+};
+
 var threeImageContainer = document.getElementById('three-image-container');
-var j;
+
 function displayThreeImages (event){
-  for (var i = 0; i < 3; i++){
+  getRandomArray();
+  for (var i = 0; i < numbers.length; i++){
     var singleImage = document.createElement('div');
-    j = getRandomItem();
-    singleImage.innerHTML = '<img src="' + allItemsArray[j].itemPath + '">';
-    singleImage.classList.add(allItemsArray[j].itemName);
-    allItemsArray[j].timesShown++;
+    singleImage.innerHTML = '<img src="' + allItemsArray[numbers[i]].itemPath + '">';
+    singleImage.classList.add(allItemsArray[numbers[i]].itemName);
+    allItemsArray[numbers[i]].timesShown++;
     threeImageContainer.appendChild(singleImage);
   }
 };
@@ -41,27 +70,16 @@ displayThreeImages();
 var clickCount = 0;
 var poll = true;
 
-function click25 (){
+function handleClick() {
   clickCount++;
-  console.log('click' + clickCount);
-  if(clickCount >= 6){
+  if (clickCount >= 6){
     console.log('done');
   }else{
-    handleClick(event);
-  };
+    clickResponse(event);
+  }
 }
 
-// function clickNumber (numberOfClicks){
-//   clickCount++;
-//   console.log('click' + clickCount);
-//   if(clickCount >= numberOfClicks){
-//     console.log('done');
-//   }else{
-//     handleClick(event);
-//   };
-// }
-
-function handleClick (event){
+function clickResponse (event){
   var response = event.target.parentNode;
   var item = response.classList[0];
   for (var i = 0; i < allItemsArray.length; i++){
@@ -74,4 +92,4 @@ function handleClick (event){
   displayThreeImages();
 };
 
-threeImageContainer.addEventListener('click', click25);
+threeImageContainer.addEventListener('click', handleClick);
