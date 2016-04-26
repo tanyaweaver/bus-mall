@@ -6,9 +6,21 @@
   margin: 0 auto;
 }
 
+#charts {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+}
+
+#results {
+  display:flex;
+  flex-direction: row;
+  justify-content: center;
+}
 img {
   width: 200px;
   height: 200px;
+  border-style: groove;
 }
 
 body {
