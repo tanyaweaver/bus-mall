@@ -4,7 +4,7 @@ var votes = [];
 var shown = [];
 var popularity = [];
 var clickCount = 1;
-var attempts = 25;
+var attempts = 5;
 var additionRoundAttempts = 10;
 var threeImageContainer = document.getElementById('three-image-container');
 var chartsContainer = document.getElementById('charts');
@@ -133,8 +133,8 @@ function createCanvasElements() {
   for (var i = 0; i < canvasIds.length; i++) {
     var canvas = document.createElement('canvas');
     canvas.id = canvasIds[i];
-    canvas.width = 400;
-    canvas.height = 300;
+    canvas.width = 800;
+    canvas.height = 200;
     chartsContainer.appendChild(canvas);
   };
 };
@@ -174,7 +174,7 @@ function displayCharts(){
 function displayThreeButtonsUnderImages(){
   resultsContainer.textContent = '';
   resultsButton.textContent = ('Show Results');
-  continueButton.textContent = ('Continue to vote');
+  continueButton.textContent = ('Vote 10 more times');
   doneButton.textContent = ('Done');
   divResults.appendChild(resultsButton);
   divResults.appendChild(continueButton);
