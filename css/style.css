@@ -16,7 +16,7 @@
   align-items: center;;
 }
 
-#results {
+#three-image-container {
   display:flex;
   flex-direction: row;
   justify-content: center;
@@ -38,17 +38,17 @@ body {
   border-style:double;
   border-color: #33691E;
   border-width:medium;
-  margin-left: 150px;
-  margin-right: 150px;
+  margin: 0px 150px 50px 150px;
+  padding-bottom: 30px;
 }
 
 button {
-  background-color: #90A4AE;
+  background-color: #E0E0E0;
   width: 200px;
   height: 50px;
   font-size: 20px;
   color:#33691E;
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Righteous', cursive;
 }
 
 h1 {
@@ -56,6 +56,13 @@ h1 {
   margin: 0auto;
   font-size: 45px;
   margin-bottom: 0px;
+  margin-top: 20px;
+  font-family: 'Candal', sans-serif;
+}
+hr {
+  width: 70%;
+  height: 1px;
+  background-color: #4A148C;
 }
 
 p {
@@ -71,4 +78,24 @@ p {
   align-items: center;
   margin-top: 5px;
   margin-bottom: 5px;
+}
+
+.invisible {
+  visibility: hidden;
+}
+
+div {
+  text-align: center;
+}
+
+#attempt-counter {
+  font-size: 20px;
+  color:#33691E;
+  font-family: 'Righteous', cursive;
+}
+
+#votes-to-day {
+  font-size: 30px;
+  color:#33691E;
+  font-family: 'Righteous', cursive;
 }
