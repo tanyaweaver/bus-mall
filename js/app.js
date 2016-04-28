@@ -22,17 +22,10 @@ function MallItem (name, path) {
   this.itemPath = path;
   this.timesShown = 0;
   this.timesVoted = 0;
-  this.itemPopularity = 0;
   allItemsArray.push(this);
   namesArray.push(this.itemName);
-  votes.push(this.timesVoted);
-  shown.push(this.timesShown);
-  popularity.push(this.itemPopularity);
 };
 
-MallItem.prototype.itemPopularityMethod = function() {
-  this.itemPopularity = parseInt(this.timesVoted * 100 / this.timesShown);
-};
 var bag = new MallItem ('bag', 'images/bag.jpg');
 var banana = new MallItem ('banana', 'images/banana.jpg');
 var bathroom = new MallItem ('bathroom', 'images/bathroom.jpg');
@@ -58,28 +51,9 @@ var wineGlass = new MallItem ('wine-glass', 'images/wine-glass.jpg');
   if(localStorage.allItemsArrayData){
     console.log('localStorage for allItemsArrayData exist');
     allItemsArray = JSON.parse(localStorage.allItemsArrayData);
-    for( i = 0; i < allItemsArray.length; i++){
-      allItemsArray[i].itemPopularityMethod = function(){
-        this.itemPopularity = parseInt(this.timesVoted * 100 / this.timesShown);
-      };
-    }
   }else{
     console.log('localStorage for allItemsArrayData doesn\'t exist');
   };
-
-  // if(localStorage.votesData){
-  //   console.log('localStorage for votesData exist');
-  //   votes = JSON.parse(localStorage.votesData);
-  // }else{
-  //   console.log('localStorage for votesData doesn\'t exist');
-  // };
-  //
-  // if(localStorage.popularityData){
-  //   console.log('localStorage for popularityData exist');
-  //   popularity = JSON.parse(localStorage.popularityData);
-  // }else{
-  //   console.log('localStorage for popularityData doesn\'t exist');
-  // }
 })();
 
 function getRandomItem(){
@@ -114,16 +88,11 @@ function displayThreeImages (event){
   attemptsLeftDisplay.textContent = (parseInt(attempts - clickCount) + ' attempt(s) left');
 
   var r = getRandomArray(); // 'r' is an array with three unique random numbers
-  console.log('r is ' + r);
   for (var i = 0; i < r.length; i++){
-    var a = parseInt(r[i]);
-    console.log('a is ' + a);
     var singleImage = document.createElement('div');
-    singleImage.innerHTML = '<img src="' + allItemsArray[a].itemPath + '">';
-    singleImage.id = allItemsArray[a].itemName;
-    allItemsArray[a].timesShown++; //tracking what was shown
-    shown[a] = allItemsArray[a].timesShown;
-    console.log(allItemsArray[a].itemName + 'was shown ' + allItemsArray[a].timesShown + 'times');
+    singleImage.innerHTML = '<img src="' + allItemsArray[r[i]].itemPath + '">';
+    singleImage.id = allItemsArray[r[i]].itemName;
+    allItemsArray[r[i]].timesShown++;
     localStorage.setItem('allItemsArrayData', JSON.stringify(allItemsArray));
     threeImageContainer.appendChild(singleImage);
   }
@@ -159,7 +128,7 @@ function createDataForCharts() {
     datasets: [
       {
         data: popularity,
-        label: 'Popularity (timesVoted/timesShown)',
+        label: 'Popularity, % (timesVoted / timesShown * 100)',
         backgroundColor: 'magenta',
         hoverBackgroundColor: 'green'
       }]
@@ -224,9 +193,6 @@ function lastClickOnImageResponse (event) { //for last click no new images displ
   for (var i = 0; i < allItemsArray.length; i++){
     if (allItemsArray[i].itemName === response){
       allItemsArray[i].timesVoted++;
-      votes[i] = allItemsArray[i].timesVoted;
-      allItemsArray[i].itemPopularityMethod();
-      popularity[i] = allItemsArray[i].itemPopularity;
       localStorage.setItem('allItemsArrayData', JSON.stringify(allItemsArray));
       console.log(response + ' voted ' + parseInt(allItemsArray[i].timesVoted));
     }
@@ -240,9 +206,6 @@ function clickOnImageResponse (event){ //tracking what was clicked, displaying 3
   for (var i = 0; i < allItemsArray.length; i++){
     if (allItemsArray[i].itemName === response){
       allItemsArray[i].timesVoted++;
-      votes[i] = allItemsArray[i].timesVoted;
-      allItemsArray[i].itemPopularityMethod();
-      popularity[i] = allItemsArray[i].itemPopularity;
       localStorage.setItem('allItemsArrayData', JSON.stringify(allItemsArray));
       console.log(response + ' voted ' + parseInt(allItemsArray[i].timesVoted));
     }
@@ -250,17 +213,23 @@ function clickOnImageResponse (event){ //tracking what was clicked, displaying 3
   displayThreeImages();
 };
 
-function allVotes(){
+function generateArraysAndTotal(){
+  chartsContainer.textContent = '';
   var votesTotal = 0;
-  for(var i = 0; i < votes.length; i++){
+  votes = [];
+  shown = [];
+  popularity = [];
+  for(var i = 0; i < allItemsArray.length; i++){
+    votes.push(allItemsArray[i].timesVoted);
     votesTotal += votes[i];
+    shown.push(allItemsArray[i].timesShown);
+    popularity.push(parseInt(allItemsArray[i].timesVoted * 100 / allItemsArray[i].timesShown));
   }
-  return votesTotal;
+  votesToDate.textContent = ('Total votes: ' + votesTotal);
 }
 
 function handleClickOnResults() { //display results by clicking RESULTS button
-  chartsContainer.textContent = '';
-  votesToDate.textContent = ('Total votes: ' + allVotes());
+  generateArraysAndTotal();
   createDataForCharts();
   createCanvasElements();
   displayCharts();
@@ -268,13 +237,13 @@ function handleClickOnResults() { //display results by clicking RESULTS button
 
 function handleClickMoreVoting() { //takes user back to voting by clicking CONTINUE button
   chartsContainer.textContent = '',
-  // votesToDate.textContent = '',
+  votesToDate.textContent = '',
   attempts += 10;
   displayThreeImages();
 };
 
 function handleDoneButton(){
-  document.getElementById('all-content').style.visibility = 'hidden';
+  document.getElementById('all-content').classList.add('invisible');
   alert('Thank you for participating in the poll! Refresh page to start over.');
 }
 
