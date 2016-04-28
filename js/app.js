@@ -4,9 +4,8 @@ var votes = [];
 var shown = [];
 var popularity = [];
 var clickCount = 0;
-var attempts = 5;
+var attempts = 25;
 var attemptsLeftDisplay = document.getElementById('attempt-counter');
-var votesToDate = document.getElementById('votes-to-day');
 var threeImageContainer = document.getElementById('three-image-container');
 var chartsContainer = document.getElementById('charts');
 var threeButtonsContainer = document.getElementById('three-buttons-container');
@@ -24,7 +23,7 @@ function MallItem (name, path) {
   this.timesVoted = 0;
   allItemsArray.push(this);
   namesArray.push(this.itemName);
-};
+}
 
 var bag = new MallItem ('bag', 'images/bag.jpg');
 var banana = new MallItem ('banana', 'images/banana.jpg');
@@ -58,7 +57,7 @@ var wineGlass = new MallItem ('wine-glass', 'images/wine-glass.jpg');
 
 function getRandomItem(){
   return Math.floor(Math.random() * allItemsArray.length);
-};
+}
 
 function getRandomArray(){ //making sure all three images are different
   var k = 0;
@@ -80,7 +79,7 @@ function getRandomArray(){ //making sure all three images are different
     k++;
   };
   return numbers; //returns an array with three unique random numbers
-};
+}
 
 function displayThreeImages (event){
   threeImageContainer.textContent = '';
@@ -96,9 +95,54 @@ function displayThreeImages (event){
     localStorage.setItem('allItemsArrayData', JSON.stringify(allItemsArray));
     threeImageContainer.appendChild(singleImage);
   }
-};
+}
 
 displayThreeImages();
+
+function clickOnImageResponse (event){ //tracking what was clicked, displaying 3 new pics after a click
+  clickCount++;
+  var response = event.target.parentNode.id;
+  for (var i = 0; i < allItemsArray.length; i++){
+    if (allItemsArray[i].itemName === response){
+      allItemsArray[i].timesVoted++;
+      localStorage.setItem('allItemsArrayData', JSON.stringify(allItemsArray));
+      console.log(response + ' voted ' + parseInt(allItemsArray[i].timesVoted));
+    }
+  }
+  displayThreeImages();
+}
+
+function lastClickOnImageResponse (event) { //for last click no new images displayed
+  clickCount++;
+  var response = event.target.parentNode.id;
+  for (var i = 0; i < allItemsArray.length; i++){
+    if (allItemsArray[i].itemName === response){
+      allItemsArray[i].timesVoted++;
+      localStorage.setItem('allItemsArrayData', JSON.stringify(allItemsArray));
+      console.log(response + ' voted ' + parseInt(allItemsArray[i].timesVoted));
+    }
+  }
+  attemptsLeftDisplay.textContent = (parseInt(attempts - clickCount) + ' attempt(s) left');
+}
+
+//DATA VISUALIZATION
+function generateArraysAndTotal(){
+  chartsContainer.textContent = '';
+  var votesTotal = 0;
+  votes = [];
+  shown = [];
+  popularity = [];
+  for(var i = 0; i < allItemsArray.length; i++){
+    votes.push(allItemsArray[i].timesVoted);
+    votesTotal += votes[i];
+    shown.push(allItemsArray[i].timesShown);
+    popularity.push(parseInt(allItemsArray[i].timesVoted * 100 / allItemsArray[i].timesShown));
+  }
+  var votesToDate = document.createElement('div');
+  votesToDate.id = 'votes-to-date';
+  votesToDate.textContent = ('Total votes: ' + votesTotal);
+  chartsContainer.appendChild(votesToDate);
+}
 
 function createDataForCharts() {
   data1 = {
@@ -140,11 +184,11 @@ function createCanvasElements() {
   for (var i = 0; i < canvasIds.length; i++) {
     var canvas = document.createElement('canvas');
     canvas.id = canvasIds[i];
-    canvas.width = 800;
+    canvas.width = 600;
     canvas.height = 200;
     chartsContainer.appendChild(canvas);
   };
-};
+}
 
 function displayCharts(){
   var votesChart = document.getElementById('votes-chart').getContext('2d');
@@ -175,7 +219,7 @@ function displayCharts(){
   });
 }
 
-//Below: functions to handle clicks
+//HANDLING CLICKS
 function handleClickOnImages() { //keeps track of clicking attempts
   if (clickCount === (attempts - 1)){
     lastClickOnImageResponse(event);
@@ -187,48 +231,8 @@ function handleClickOnImages() { //keeps track of clicking attempts
   }
 }
 
-function lastClickOnImageResponse (event) { //for last click no new images displayed
-  clickCount++;
-  var response = event.target.parentNode.id;
-  for (var i = 0; i < allItemsArray.length; i++){
-    if (allItemsArray[i].itemName === response){
-      allItemsArray[i].timesVoted++;
-      localStorage.setItem('allItemsArrayData', JSON.stringify(allItemsArray));
-      console.log(response + ' voted ' + parseInt(allItemsArray[i].timesVoted));
-    }
-  }
-  attemptsLeftDisplay.textContent = (parseInt(attempts - clickCount) + ' attempt(s) left');
-}
-
-function clickOnImageResponse (event){ //tracking what was clicked, displaying 3 new pics after a click
-  clickCount++;
-  var response = event.target.parentNode.id;
-  for (var i = 0; i < allItemsArray.length; i++){
-    if (allItemsArray[i].itemName === response){
-      allItemsArray[i].timesVoted++;
-      localStorage.setItem('allItemsArrayData', JSON.stringify(allItemsArray));
-      console.log(response + ' voted ' + parseInt(allItemsArray[i].timesVoted));
-    }
-  }
-  displayThreeImages();
-};
-
-function generateArraysAndTotal(){
-  chartsContainer.textContent = '';
-  var votesTotal = 0;
-  votes = [];
-  shown = [];
-  popularity = [];
-  for(var i = 0; i < allItemsArray.length; i++){
-    votes.push(allItemsArray[i].timesVoted);
-    votesTotal += votes[i];
-    shown.push(allItemsArray[i].timesShown);
-    popularity.push(parseInt(allItemsArray[i].timesVoted * 100 / allItemsArray[i].timesShown));
-  }
-  votesToDate.textContent = ('Total votes: ' + votesTotal);
-}
-
-function handleClickOnResults() { //display results by clicking RESULTS button
+function handleClickOnResults() {
+  document.getElementById('all-content').classList.add('move-left');
   generateArraysAndTotal();
   createDataForCharts();
   createCanvasElements();
@@ -236,8 +240,8 @@ function handleClickOnResults() { //display results by clicking RESULTS button
 };
 
 function handleClickMoreVoting() { //takes user back to voting by clicking CONTINUE button
+  document.getElementById('all-content').classList.remove('move-left');
   chartsContainer.textContent = '',
-  votesToDate.textContent = '',
   attempts += 10;
   displayThreeImages();
 };
