@@ -184,7 +184,7 @@ function createCanvasElements() {
   for (var i = 0; i < canvasIds.length; i++) {
     var canvas = document.createElement('canvas');
     canvas.id = canvasIds[i];
-    canvas.width = 600;
+    canvas.width = 450;
     canvas.height = 200;
     chartsContainer.appendChild(canvas);
   };

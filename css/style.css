@@ -15,6 +15,7 @@
   flex-direction: column;
   align-items: center;
   position: absolute;
+  margin-left: 70px;
 }
 
 #three-image-container {
@@ -68,7 +69,7 @@ p {
   text-align: center;
   margin: 0auto;
   font-size: 25px;
-  width: 700px;
+  width: 600px;
 }
 
 #intro {
@@ -101,5 +102,5 @@ div {
 }
 
 .move-left {
-  transform: translateX(-310px);
+  transform: translateX(-260px);
 }
